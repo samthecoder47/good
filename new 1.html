@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Multi-Step Registration Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .step {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+    </style>
+    <script>
+        let currentStep = 0;
+
+        function showStep(step) {
+            let steps = document.getElementsByClassName("step");
+            for (let i = 0; i < steps.length; i++) {
+                steps[i].classList.remove("active");
+            }
+            steps[step].classList.add("active");
+        }
+
+        function nextStep() {
+            let steps = document.getElementsByClassName("step");
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                showStep(currentStep);
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 0) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        }
+
+        function submitForm(event) {
+            event.preventDefault(); // Prevent actual form submission
+            const formData = new FormData(document.getElementById("registerForm"));
+            let queryString = new URLSearchParams(formData).toString();
+            window.location.href = window.location.pathname + "?" + queryString; // Reload page with form data in URL
+        }
+
+        window.onload = function () {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has("first_name")) {
+                displaySubmittedData(params);
+            } else {
+                showStep(currentStep);
+            }
+        };
+
+        function displaySubmittedData(params) {
+            document.body.innerHTML = `
+                <h1>Form Submission Data</h1>
+                <p><strong>First Name:</strong> ${params.get("first_name") || "Not provided"}</p>
+                <p><strong>Last Name:</strong> ${params.get("last_name") || "Not provided"}</p>
+                <p><strong>Email:</strong> ${params.get("email") || "Not provided"}</p>
+                <p><strong>Password:</strong> ${params.get("password") || "Not provided"}</p>
+                <br><br>
+                <a href="${window.location.pathname}">Go Back to Form</a>
+            `;
+        }
+    </script>
+</head>
+<body>
+
+    <h1>Multi-Step Registration Form</h1>
+    
+    <form id="registerForm" onsubmit="submitForm(event)">
+        
+        <!-- Step 1 -->
+        <div class="step active">
+            <h2>Step 1: Enter Your First Name</h2>
+            <input type="text" name="first_name" placeholder="Enter first name" required><br><br>
+            <button type="button" onclick="nextStep()">Next</button>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step">
+            <h2>Step 2: Enter Your Last Name</h2>
+            <input type="text" name="last_name" placeholder="Enter last name" required><br><br>
+            <button type="button" onclick="prevStep()">Back</button>
+            <button type="button" onclick="nextStep()">Next</button>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step">
+            <h2>Step 3: Enter Your Email</h2>
+            <input type="email" name="email" placeholder="Enter email" required><br><br>
+            <button type="button" onclick="prevStep()">Back</button>
+            <button type="button" onclick="nextStep()">Next</button>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step">
+            <h2>Step 4: Enter Your Password</h2>
+            <input type="password" name="password" placeholder="Enter password" required><br><br>
+            <button type="button" onclick="prevStep()">Back</button>
+            <button type="submit">Submit</button>
+        </div>
+
+    </form>
+
+</body>
+</html>
